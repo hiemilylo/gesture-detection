@@ -60,6 +60,7 @@ public class MotionDetector {
 
 	private SensorManager sensorManager;
 	private Sensor accelerometer;
+	private Sensor gyroscope;
 
 	private boolean recStarted;
 
