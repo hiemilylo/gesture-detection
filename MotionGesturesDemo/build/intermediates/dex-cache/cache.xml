@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="C:\Users\Girls Who Code\.gradle\caches\transforms-1\files-1.1\support-fragment-26.1.0.aar\03558aeba7a9fd8c52ebf890e51bb5e7\jars\classes.jar"
+        jumboMode="false"
+        min-sdk-version="21"
+        optimize="true"
+        revision="26.0.2"
+        sha1="7efef32744ca4a436492d5cf28c08698cc2af256">
+        <dex dex="C:\Users\Girls Who Code\AndroidStudioProjects\motion_gestures_detection-master\MotionGesturesDemo\app\build\intermediates\transforms\preDex\release\8.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Girls Who Code\.gradle\caches\transforms-1\files-1.1\runtime-1.0.0.aar\fd27a4f29d04be1fbf6c559bd7e49d2e\jars\classes.jar"
+        jumboMode="false"
+        min-sdk-version="21"
+        optimize="true"
+        revision="26.0.2"
+        sha1="b62fdc4cfef174c1e456014195c83fa7de7dc041">
+        <dex dex="C:\Users\Girls Who Code\AndroidStudioProjects\motion_gestures_detection-master\MotionGesturesDemo\app\build\intermediates\transforms\preDex\release\15.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Girls Who Code\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.1.0.aar\bfb338b0f4dcae351ad960b9fe453b7f\jars\classes.jar"
+        jumboMode="false"
+        min-sdk-version="21"
+        optimize="true"
+        revision="26.0.2"
+        sha1="f97cf85b0fe70d37a705111dafa6b1b418ea1650">
+        <dex dex="C:\Users\Girls Who Code\AndroidStudioProjects\motion_gestures_detection-master\MotionGesturesDemo\app\build\intermediates\transforms\preDex\release\7.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Girls Who Code\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.1.0.aar\70dd2a9a7a356b12e50ccdf49ccf6bcc\jars\classes.jar"
+        jumboMode="false"
+        min-sdk-version="21"
+        optimize="true"
+        revision="26.0.2"
+        sha1="40392f30a601db5675cdf18192aab013d6fee6ec">
+        <dex dex="C:\Users\Girls Who Code\AndroidStudioProjects\motion_gestures_detection-master\MotionGesturesDemo\app\build\intermediates\transforms\preDex\release\4.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Girls Who Code\.gradle\caches\transforms-1\files-1.1\motiondetectionlib-1.0.0.aar\43a46b2019d1e63c2f855790a7c4881a\jars\classes.jar"
+        jumboMode="false"
+        min-sdk-version="21"
+        optimize="true"
+        revision="26.0.2"
+        sha1="c4b29d799cb890f8bc2ba8ea73a53a5312d1d678">
+        <dex dex="C:\Users\Girls Who Code\AndroidStudioProjects\motion_gestures_detection-master\MotionGesturesDemo\app\build\intermediates\transforms\preDex\release\1.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Girls Who Code\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.1.0.aar\70e6de977b1750a792e5e8645ac5103a\jars\classes.jar"
+        jumboMode="false"
+        min-sdk-version="21"
+        optimize="true"
+        revision="26.0.2"
+        sha1="508f50705b4fde51a16259f29c854201a3044516">
+        <dex dex="C:\Users\Girls Who Code\AndroidStudioProjects\motion_gestures_detection-master\MotionGesturesDemo\app\build\intermediates\transforms\preDex\release\10.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Girls Who Code\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.1.0.aar\e5e50ad0757c91417bee0eb9c2a3821b\jars\classes.jar"
+        jumboMode="false"
+        min-sdk-version="21"
+        optimize="true"
+        revision="26.0.2"
+        sha1="f428e2fbc9ed0b297e3a3f420e51e6982f66822d">
+        <dex dex="C:\Users\Girls Who Code\AndroidStudioProjects\motion_gestures_detection-master\MotionGesturesDemo\app\build\intermediates\transforms\preDex\release\2.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Girls Who Code\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.1.0.aar\622ed76f23742d8726b9c0a9c19846cc\jars\classes.jar"
+        jumboMode="false"
+        min-sdk-version="21"
+        optimize="true"
+        revision="26.0.2"
+        sha1="6f4138a4e065826cb044d49faea4cfd7191773d1">
+        <dex dex="C:\Users\Girls Who Code\AndroidStudioProjects\motion_gestures_detection-master\MotionGesturesDemo\app\build\intermediates\transforms\preDex\release\5.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Girls Who Code\.gradle\caches\transforms-1\files-1.1\support-v4-26.1.0.aar\410bf73f7614a93b7449f81bcdde9b0c\jars\classes.jar"
+        jumboMode="false"
+        min-sdk-version="21"
+        optimize="true"
+        revision="26.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="C:\Users\Girls Who Code\AndroidStudioProjects\motion_gestures_detection-master\MotionGesturesDemo\app\build\intermediates\transforms\preDex\release\6.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Girls Who Code\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.0.2.aar\1a3438bf433872df354eff70c1f5896e\jars\classes.jar"
+        jumboMode="false"
+        min-sdk-version="21"
+        optimize="true"
+        revision="26.0.2"
+        sha1="44ee06abb66da30f5855e6bf54574e64cdcd982a">
+        <dex dex="C:\Users\Girls Who Code\AndroidStudioProjects\motion_gestures_detection-master\MotionGesturesDemo\app\build\intermediates\transforms\preDex\release\3.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Girls Who Code\.gradle\caches\transforms-1\files-1.1\support-compat-26.1.0.aar\ca9c32734981b19f61ac33532f7972be\jars\classes.jar"
+        jumboMode="false"
+        min-sdk-version="21"
+        optimize="true"
+        revision="26.0.2"
+        sha1="2442771a5590dd4eb4bce00c2e9dca9e22e4c963">
+        <dex dex="C:\Users\Girls Who Code\AndroidStudioProjects\motion_gestures_detection-master\MotionGesturesDemo\app\build\intermediates\transforms\preDex\release\11.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Girls Who Code\.gradle\caches\transforms-1\files-1.1\tensorflow-android-1.4.0.aar\153c59a02718b3361eb72018f6b623d0\jars\classes.jar"
+        jumboMode="false"
+        min-sdk-version="21"
+        optimize="true"
+        revision="26.0.2"
+        sha1="91bca4fa901f5ab972075e688f56ae98af48c2de">
+        <dex dex="C:\Users\Girls Who Code\AndroidStudioProjects\motion_gestures_detection-master\MotionGesturesDemo\app\build\intermediates\transforms\preDex\release\14.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Girls Who Code\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.1.0.aar\7b418693a3ad886495ab4912d9517e36\jars\classes.jar"
+        jumboMode="false"
+        min-sdk-version="21"
+        optimize="true"
+        revision="26.0.2"
+        sha1="233f60a165ae622c8b36731502ebbda0f65e1930">
+        <dex dex="C:\Users\Girls Who Code\AndroidStudioProjects\motion_gestures_detection-master\MotionGesturesDemo\app\build\intermediates\transforms\preDex\release\9.jar" />
+    </item>
+
+</items>
