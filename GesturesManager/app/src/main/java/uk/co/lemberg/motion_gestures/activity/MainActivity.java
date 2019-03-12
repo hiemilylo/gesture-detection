@@ -38,7 +38,9 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import uk.co.lemberg.motion_gestures.R;
 import uk.co.lemberg.motion_gestures.adapter.ColorsAdapter;
@@ -49,6 +51,8 @@ import uk.co.lemberg.motion_gestures.utils.Label;
 import uk.co.lemberg.motion_gestures.utils.TimestampAxisFormatter;
 import uk.co.lemberg.motion_gestures.utils.Utils;
 
+import static android.content.Context.SENSOR_SERVICE;
+
 public class MainActivity extends AppCompatActivity implements DialogResultListener {
 
 	private static final String TAG = MainActivity.class.getSimpleName();
@@ -56,8 +60,8 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 	private static final int SHOW_FILE_NAME_DLG_REQ_CODE = 1000;
 	private static final int WRITE_PERMISSIONS_REQ_CODE = 1001;
 
-	private static final int GESTURE_DURATION_MS = 1280000; // 1.28 sec
-	private static final int GESTURE_SAMPLES = 128;
+	private static final int GESTURE_DURATION_MS = 2000000; // 2.56 sec
+	private static final int GESTURE_SAMPLES = 200;
 
 	private AppSettings settings;
 
@@ -68,9 +72,12 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 
 	private SensorManager sensorManager;
 	private Sensor accelerometer;
+	private Sensor gyroscope;
 
 	private boolean recStarted = false;
 	private long firstTimestamp = -1;
+	private float lastTimestamp = -1;
+	private Map<Integer, Double> currData = new HashMap<>();
 	private int selectedEntryIndex = -1;
 
 	private long fileNameTimestamp = -1;
@@ -83,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 		settings = AppSettings.getAppSettings(this);
 		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 		accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+		gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
 		initViews();
 		fillStatus();
@@ -156,8 +164,10 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 	}
 
 	private boolean checkPermissions() {
+	    Log.d("info", "checking permissions");
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSIONS_REQ_CODE);
+			Log.d("info", "requesting");
 			return false;
 		}
 		return true;
@@ -220,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 		rightAxis.setAxisMaximum(10f);
 		rightAxis.setAxisMinimum(-10f);
 		rightAxis.setDrawGridLines(true);
+
 	}
 
 	private final View.OnClickListener clickListener = new View.OnClickListener() {
@@ -237,6 +248,10 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 	private void startRec() {
 		if (startRecInt()) {
 			getLineData().clearValues();
+			for (int i = 0; i < LINE_DESCRIPTIONS.length; i++) {
+                ILineDataSet set = createLineDataSet(LINE_DESCRIPTIONS[i], LINE_COLORS[i]);
+                getLineData().addDataSet(set);
+            }
 		}
 		else {
 			Toast.makeText(this, R.string.sensor_failed, Toast.LENGTH_SHORT).show();
@@ -249,6 +264,7 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 			firstTimestamp = -1;
 			fileNameTimestamp = System.currentTimeMillis();
 			chart.highlightValue(null, true);
+            sensorManager.registerListener(sensorEventListener, gyroscope, GESTURE_DURATION_MS / GESTURE_SAMPLES);
 			recStarted = sensorManager.registerListener(sensorEventListener, accelerometer, GESTURE_DURATION_MS / GESTURE_SAMPLES);
 		}
 		return recStarted;
@@ -329,6 +345,20 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 		fillStatus();
 	}
 
+	private void addDataFromMap() {
+        addPoint(getLineData(), X_INDEX, lastTimestamp, currData.get(0).floatValue());
+        addPoint(getLineData(), Y_INDEX, lastTimestamp, currData.get(1).floatValue());
+        addPoint(getLineData(), Z_INDEX, lastTimestamp, currData.get(2).floatValue());
+        addPoint(getLineData(), G_INDEX, lastTimestamp, currData.get(3).floatValue());
+        lastTimestamp = -1;
+        currData = new HashMap<>();
+
+        chart.notifyDataSetChanged();
+        chart.invalidate();
+        supportInvalidateOptionsMenu();
+        fillStatus();
+    }
+
 	private final SensorEventListener sensorEventListener = new SensorEventListener() {
 		@Override
 		public void onAccuracyChanged(Sensor sensor, int accuracy) {}
@@ -337,21 +367,30 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 		public void onSensorChanged(SensorEvent event) {
 			if (firstTimestamp == -1) firstTimestamp = event.timestamp;
 			long entryTimestampFixed = event.timestamp - firstTimestamp;
+            final float floatTimestampMicros = entryTimestampFixed / 1000000f;
+            if (lastTimestamp == -1) lastTimestamp = floatTimestampMicros;
 
-			final float floatTimestampMicros = entryTimestampFixed / 1000000f;
-			final float x = event.values[0];
-			final float y = event.values[1];
-			final float z = event.values[2];
 
-			addPoint(getLineData(), X_INDEX, floatTimestampMicros, x);
-			addPoint(getLineData(), Y_INDEX, floatTimestampMicros, y);
-			addPoint(getLineData(), Z_INDEX, floatTimestampMicros, z);
-
-			chart.notifyDataSetChanged();
-			chart.invalidate();
-
-			supportInvalidateOptionsMenu();
-			fillStatus();
+            if (event.sensor.getType() != Sensor.TYPE_GYROSCOPE) {
+//                if (!currData.containsKey(3)) {
+//                    final float g = event.values[1];
+//                    currData.put(3, (double)g);
+//                }
+            } else {
+                if (!currData.containsKey(0)) {
+                    final float x = event.values[0];
+                    final float y = event.values[1];
+                    final float z = event.values[2];
+                    currData.put(0, (double)x);
+                    currData.put(1, (double)y);
+                    currData.put(2, (double)z);
+                    currData.put(3, (double)0.0);
+                    addDataFromMap();
+                }
+            }
+//            if (currData.size() == LINE_DESCRIPTIONS.length) {
+//                addDataFromMap();
+//            }
 		}
 	};
 
@@ -476,6 +515,7 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 
 	private void saveSelectionDataToast(String fileName) {
 		try {
+		    Log.d("info", "saving");
 			Utils.saveLineData(new File(settings.getWorkingDir(), fileName), getLineData(), selectedEntryIndex, GESTURE_SAMPLES);
 			showToast(getString(R.string.data_saved));
 		}
@@ -521,15 +561,17 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 	}
 
 	// region chart helper methods
-	private static final String[] LINE_DESCRIPTIONS = {"X", "Y", "Z"};
-	private static final int[] LINE_COLORS = {0xFFFF0000, 0xFF00FF00, 0xFF0000FF};
+	private static final String[] LINE_DESCRIPTIONS = {"X", "Y", "Z", "G"};
+	private static final int[] LINE_COLORS = {0xFFFF0000, 0xFF00FF00, 0xFF0000FF, 0xFFFFFFFF};
 
 	private static final int X_INDEX = 0;
 	private static final int Y_INDEX = 1;
 	private static final int Z_INDEX = 2;
+	private static final int G_INDEX = 3;
 
 	private static LineDataSet createLineDataSet(String description, int color) {
 		LineDataSet set = new LineDataSet(null, description);
+		Log.d("info", "d: " + description + " c: " + color);
 		set.setAxisDependency(YAxis.AxisDependency.RIGHT);
 		set.setColor(color);
 		set.setDrawCircles(false);
@@ -551,6 +593,7 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 
 	private static void addPoint(LineData data, int dataSetIndex, float x, float y) {
 		ILineDataSet set = data.getDataSetByIndex(dataSetIndex);
+		//Log.d("info", "data: " + dataSetIndex);
 
 		if (set == null) {
 			set = createLineDataSet(LINE_DESCRIPTIONS[dataSetIndex], LINE_COLORS[dataSetIndex]);
@@ -567,6 +610,7 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 
 		LineData lineData = new LineData();
 		for (int i = 0; i < LINE_DESCRIPTIONS.length; i++) {
+		    Log.d("info", "i: " + i + " color: " + LINE_COLORS[i]);
 			lineData.addDataSet(createLineDataSet(LINE_DESCRIPTIONS[i], LINE_COLORS[i]));
 		}
 
@@ -574,6 +618,7 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 			addPoint(lineData, X_INDEX, entry.timestamp, entry.x);
 			addPoint(lineData, Y_INDEX, entry.timestamp, entry.y);
 			addPoint(lineData, Z_INDEX, entry.timestamp, entry.z);
+			addPoint(lineData, G_INDEX, entry.timestamp, entry.gx);
 		}
 
 		return new Pair<>(pair.first, lineData);

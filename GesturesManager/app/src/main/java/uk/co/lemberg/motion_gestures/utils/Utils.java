@@ -1,6 +1,7 @@
 package uk.co.lemberg.motion_gestures.utils;
 
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -42,17 +43,19 @@ public class Utils
 		public final float x;
 		public final float y;
 		public final float z;
+		public final float gx;
 
-		public FileEntry(float timestamp, float x, float y, float z) {
+		public FileEntry(float timestamp, float x, float y, float z, float gx) {
 			this.timestamp = timestamp;
 			this.x = x;
 			this.y = y;
 			this.z = z;
+			this.gx = gx;
 		}
 
 		public static FileEntry fromString(String str) throws Exception {
 			String pairs[] = str.split(",");
-			if (pairs.length != 4) throw new Exception("Incorrect CSV parts count");
+			if (pairs.length != 5) throw new Exception("Incorrect CSV parts count");
 
 			NumberFormat format = NumberFormat.getInstance(Locale.ROOT);
 
@@ -60,7 +63,8 @@ public class Utils
 				format.parse(pairs[0]).floatValue(),
 				format.parse(pairs[1]).floatValue(),
 				format.parse(pairs[2]).floatValue(),
-				format.parse(pairs[3]).floatValue());
+				format.parse(pairs[3]).floatValue(),
+                    format.parse(pairs[4]).floatValue());
 		}
 	}
 
@@ -78,8 +82,13 @@ public class Utils
 	public static void saveLineData(File file, LineData data, int index, int length) throws IOException {
 		// csv format:
 		// timestamp, x, y, z
+        Log.d("testing", "" + length);
+        file =
+                new File(
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                        file.getName());
 
-		try (FileOutputStream fos = new FileOutputStream(file)) {
+        try (FileOutputStream fos = new FileOutputStream(file)) {
 			OutputStreamWriter osw = new OutputStreamWriter(fos);
 			//String header = String.format("index,x,y,z\n");
 			//osw.write(header);
@@ -87,20 +96,27 @@ public class Utils
 			ILineDataSet setX = data.getDataSetByIndex(0);
 			ILineDataSet setY = data.getDataSetByIndex(1);
 			ILineDataSet setZ = data.getDataSetByIndex(2);
+			ILineDataSet setG = data.getDataSetByIndex(3);
 
 			if ((setX.getEntryCount() != setY.getEntryCount()) || (setY.getEntryCount() != setZ.getEntryCount()))
 				throw new IllegalStateException("Z, Y, Z data set is different");
 
 			float startX = setX.getEntryForIndex(index).getX(); // fix start time
+            String total = "";
 			for (int i = index; i < index + length; i++) {
-				String str = String.format(Locale.ROOT, "%f,%f,%f,%f\n",
+				String str = String.format(Locale.ROOT, "%f,%f,%f,%f,%f\n",
 					setX.getEntryForIndex(i).getX() - startX,
 					setX.getEntryForIndex(i).getY(),
 					setY.getEntryForIndex(i).getY(),
-					setZ.getEntryForIndex(i).getY());
+					setZ.getEntryForIndex(i).getY(),
+                        setG.getEntryForIndex(i).getY());
 				osw.write(str);
+				total += str;
+				Log.d("datared", str);
 			}
+			Log.d("datared", file.getName());
 			osw.close();
+			Log.d("info", "successful file in: " + file.getAbsolutePath());
 		}
 	}
 
