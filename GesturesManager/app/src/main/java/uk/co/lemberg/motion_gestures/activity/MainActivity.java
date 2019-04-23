@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 	private TextView txtStats;
 
 	private SensorManager sensorManager;
-	private Sensor l_accelerometer, accelerometer, magnetic, gyroscope, rotation_vector;
+	private Sensor l_accelerometer, accelerometer, magnetic, gyroscope, rotation_vector, gravity;
 
 	private boolean recStarted = false;
 	private long firstTimestamp = -1;
@@ -85,6 +85,11 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 	private float[] accl = null;
 	private float[] mag = null;
 
+	// Change me to toggle which data is shown on graph
+	private int chosenSensor = Sensor.TYPE_GRAVITY;
+	private float graphMax = 10f;
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -97,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 		magnetic = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 		rotation_vector = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+		gravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
 		initViews();
 		fillStatus();
 	}
@@ -232,8 +238,8 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
 
 		YAxis rightAxis = chart.getAxisRight();
 		rightAxis.setTextColor(Color.WHITE);
-		rightAxis.setAxisMaximum(4f);
-		rightAxis.setAxisMinimum(-4f);
+		rightAxis.setAxisMaximum(graphMax);
+		rightAxis.setAxisMinimum(-graphMax);
 		rightAxis.setDrawGridLines(true);
 
 	}
@@ -273,6 +279,7 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
             sensorManager.registerListener(sensorEventListener, accelerometer, GESTURE_DURATION_MS / GESTURE_SAMPLES);
 			sensorManager.registerListener(sensorEventListener, l_accelerometer, GESTURE_DURATION_MS / GESTURE_SAMPLES);
 			sensorManager.registerListener(sensorEventListener, magnetic, GESTURE_DURATION_MS / GESTURE_SAMPLES);
+			sensorManager.registerListener(sensorEventListener, gravity, GESTURE_DURATION_MS / GESTURE_SAMPLES);
 			recStarted = sensorManager.registerListener(sensorEventListener, rotation_vector, GESTURE_DURATION_MS / GESTURE_SAMPLES);
 			// recStarted = sensorManager.registerListener(sensorEventListener, accelerometer, GESTURE_DURATION_MS / GESTURE_SAMPLES);
 		}
@@ -379,34 +386,57 @@ public class MainActivity extends AppCompatActivity implements DialogResultListe
             final float floatTimestampMicros = entryTimestampFixed / 1000000f;
             if (lastTimestamp == -1) lastTimestamp = floatTimestampMicros;
 
-            if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD && mag == null) {
-            	mag = new float[3];
-            	mag[0] = event.values[0];
-            	mag[1] = event.values[1];
-            	mag[2] = event.values[2];
-            	//Log.d("info", "found mag");
-			} else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && accl == null) {
-                accl = new float[3];
-                accl[0] = event.values[0];
-                accl[1] = event.values[1];
-                accl[2] = event.values[2];
-                //Log.d("info", "found accl");
-			}
-			if (accl != null && mag != null) {
-				// Can calculate rotation vector
-				sensorManager.getRotationMatrix(rot, null, accl, mag);
-				sensorManager.getOrientation(rot, vals);
-				final float azimuth = vals[0];
-				final float pitch = vals[1];
-				final float roll = vals[2];
-				currData.put(0, (double)azimuth);
-				currData.put(1, (double)pitch);
-				currData.put(2, (double)roll);
-				currData.put(3, (double)0.0);
+            if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR && chosenSensor == Sensor.TYPE_ROTATION_VECTOR) {
+                sensorManager.getRotationMatrixFromVector(rot, event.values);
+                vals = sensorManager.getOrientation(rot, vals);
+                final float azimuth = event.values[0];
+                final float pitch = event.values[1];
+                final float roll = event.values[2];
+                currData.put(0, (double) azimuth);
+                currData.put(1, (double) pitch);
+                currData.put(2, (double) roll);
+                currData.put(3, (double) 0.0);
                 accl = null;
-				mag = null;
+                mag = null;
+                addDataFromMap();
+            } else if (event.sensor.getType() == chosenSensor) {
+				final float x = event.values[0];
+				final float y = event.values[1];
+				final float z = event.values[2];
+				currData.put(0, (double) x);
+				currData.put(1, (double) y);
+				currData.put(2, (double) z);
+				currData.put(3, (double) 0.0);
 				addDataFromMap();
 			}
+//            if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD && mag == null) {
+//            	mag = new float[3];
+//            	mag[0] = event.values[0];
+//            	mag[1] = event.values[1];
+//            	mag[2] = event.values[2];
+//            	//Log.d("info", "found mag");
+//			} else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && accl == null) {
+//                accl = new float[3];
+//                accl[0] = event.values[0];
+//                accl[1] = event.values[1];
+//                accl[2] = event.values[2];
+//                //Log.d("info", "found accl");
+//			}
+//			if (accl != null && mag != null) {
+//				// Can calculate rotation vector
+//				sensorManager.getRotationMatrix(rot, null, accl, mag);
+//				vals = sensorManager.getOrientation(rot, vals);
+//				final float azimuth = vals[0];
+//				final float pitch = vals[1];
+//				final float roll = vals[2];
+//				currData.put(0, (double)azimuth);
+//				currData.put(1, (double)pitch);
+//				currData.put(2, (double)roll);
+//				currData.put(3, (double)0.0);
+//                accl = null;
+//				mag = null;
+//				addDataFromMap();
+//			}
 //            if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
 //                if (!currData.containsKey(0)) {
 //                    final float x = event.values[0];
